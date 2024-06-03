@@ -7,7 +7,8 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../firebase';
-import { updateUserStart, updateUserSuccess,updateUserFailure,deleteUserFailure, deleteUserStart,deleteUserSuccess} from '../redux/user/userSlice';
+import { updateUserStart, updateUserSuccess,updateUserFailure,deleteUserFailure, deleteUserStart,deleteUserSuccess,signOutUserStart,} from '../redux/user/userSlice';
+import { Link } from 'react-router-dom';
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -97,6 +98,21 @@ export default function Profile() {
       dispatch(deleteUserSuccess(data));
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutUserStart());
+      const res = await fetch('/api/auth/signout');
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      dispatch(deleteUserFailure(data.message));
     }
   };
 
